@@ -28,9 +28,9 @@
 " Happy Viming,
 " Marcin
 
-let CRDispatcher = crdispatcher#CRDispatcher
+let g:CRDispatcher = crdispatcher#CRDispatcher
 fun CRDispatch()
-    return CRDispatcher.dispatch()
+    return g:CRDispatcher.dispatch()
 endfun
 cno <Plug>CRDispatch <C-\>eCRDispatcher.dispatch()<CR><CR>
 cno <C-M> <CR>
