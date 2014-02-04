@@ -1,3 +1,7 @@
+" Author: Marcin Szamotulski
+" Email:  mszamot [AT] gmail [DOT] com
+" License: vim-license, see :help license
+
 let crdispatcher#CRDispatcher = {
     \ '/': [],
     \ '?': [],
