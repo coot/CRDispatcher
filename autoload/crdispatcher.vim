@@ -3,36 +3,29 @@
 " License: vim-license, see :help license
 
 let crdispatcher#CRDispatcher = {
-    \ '/': [],
-    \ '?': [],
-    \ ':': [],
-    \ '>': [],
-    \ '@': [],
-    \ '-': [],
-    \ }
+	    \ 'callbacks': []
+	    \ }
 fun! crdispatcher#CRDispatcher.dispatch(...) dict
-    let cmdtype = getcmdtype()
-    if empty(cmdtype)
-	let cmdtype = ':'
+    if a:0 >= 1
+	let self.ctrl_f = a:1
+    else
+	let self.ctrl_f = 0
     endif
+    let self.cmdtype = getcmdtype()
+    let self.line = getcmdline()
+    " split cmdline into | segments
     " TODO: this split will not work well when a range has a search very magic
     " pattern, like (a|b|c)
-    if a:0 == 0
-	let line = getcmdline()
-    else
-	let line = a:1
-    endif
-    " echom 'crdispatcher#CRDispatcher.dispatch: '.line
-    let cmdlines = split(line, '\\\@<!|')
+    let cmdlines = split(self.line, '\\\@<!|')
     let new_cmdlines = []
     for cmdline in cmdlines
-	if has_key(self, cmdtype)
-	    let funcrefs = get(self, cmdtype)
-	    for F in funcrefs
-		let cmdline = F(cmdline)
-	    endfor
-	endif
-	call add(new_cmdlines, cmdline)
+	let self.cmdline = cmdline
+	for F in self['callbacks']
+	    " every callback has accass to whole self and can change
+	    " self.cmdline
+	    call F(self)
+	endfor
+	call add(new_cmdlines, self.cmdline)
     endfor
     return join(new_cmdlines, '|')
 endfun
