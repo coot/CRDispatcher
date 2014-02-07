@@ -3,7 +3,7 @@
 " License: vim-license, see :help license
 
 let g:CRDispatcher = crdispatcher#CRDispatcher
-fun CRDispatch()
+fun! CRDispatch()
     return g:CRDispatcher.dispatch()
 endfun
 cno <C-M> <CR>
