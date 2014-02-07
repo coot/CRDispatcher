@@ -8,7 +8,7 @@ fun! CRDispatch()
 endfun
 cno <C-M> <CR>
 cno <Plug>CRDispatch <C-\>eCRDispatcher.dispatch()<CR><CR>
-cm <expr> <CR> getcmdtype() ==# '>' ? '<CR>' :  '<Plug>CRDispatch'
+cm <expr> <CR> index(['>', ''], getcmdtype()) != -1 && exists('g:CRDispatcher') ? '<CR>' :  '<Plug>CRDispatch'
 
 " Clever <c-f> fix:
 cno <c-f> <C-\>eCRDispatcher.dispatch(1)<CR><c-f>
