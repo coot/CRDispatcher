@@ -3,29 +3,103 @@
 " License: vim-license, see :help license
 
 let crdispatcher#CRDispatcher = {
-	    \ 'callbacks': []
+	    \ 'callbacks': [],
+	    \ 'state': 0
 	    \ }
-fun! crdispatcher#CRDispatcher.dispatch(...) dict
+" each call callback is called with part of the command line. Command line is
+" split by "|".  Each callback has access to crdispatcher#CRDispatcher and can
+" change its state: 0 (pattern has not matched, in this case next cmdline
+" fragrment will be appended and the callback will be retried), 1 (go to next
+" fragment), 2 (go to next callback).
+fun! crdispatcher#CRDispatcher.dispatch(...) dict "{{{
     if a:0 >= 1
 	let self.ctrl_f = a:1
     else
 	let self.ctrl_f = 0
     endif
-    let self.cmdtype = getcmdtype()
-    let self.line = getcmdline()
-    " split cmdline into | segments
-    " TODO: this split will not work well when a range has a search very magic
-    " pattern, like (a|b|c)
-    let cmdlines = split(self.line, '\\\@<!|')
-    let new_cmdlines = []
-    for cmdline in cmdlines
-	let self.cmdline = cmdline
-	for F in self['callbacks']
+    if a:0 >= 2
+	let self.cmdline_orig = a:2
+    else
+	let self.cmdline_orig = getcmdline()
+    endif
+    if a:0 >= 3
+	let self.cmdtype = a:3
+    else
+	let self.cmdtype = getcmdtype()
+    endif
+    let self.space = matchstr(self.cmdline_orig, '\v^%(:|\s)*')
+    let self.line = self.cmdline_orig[len(self.space):]
+    let self.cmds = vimlparsers#ParseCommandLine(self.cmdline_orig, self.cmdtype)
+    let cidx = 0
+    let clen = len(self.callbacks)
+    while cidx < clen
+	let F = self.callbacks[cidx]
+	let cidx += 1
+	let self.idx = -1
+	while self.idx < len(self.cmds) - 1
+	    let self.state = 0
+	    let self.idx += 1
+	    let idx = self.idx
+	    let self.cmd = self.cmds[idx]
 	    " every callback has accass to whole self and can change
-	    " self.cmdline
-	    call F(self)
-	endfor
-	call add(new_cmdlines, self.cmdline)
-    endfor
-    return join(new_cmdlines, '|')
-endfun
+	    " self.cmdline (and self.range) and should set self.state
+	    if type(F) == 4
+		call F.__transform_cmd__(self)
+	    elseif type(F) == 2
+		echo F
+		call F(self)
+	    endif
+	    if self.state == 2
+		" slicing in VimL does not raise exceptions [][100:] is []
+		break
+	    elseif self.state == 3
+		break
+	    endif
+	endwhile
+	unlet F
+    endwhile
+    let cmdlines = map(self.cmds, 'v:val.Join()')
+    return self['space'].join(cmdlines, '|')
+endfun "}}}
+
+let crdispatcher#CallbackClass = {}
+fun! crdispatcher#CallbackClass.__init__(vname, cmdtype, pattern, ...) dict  "{{{
+    let self.variableName = a:vname
+    let self.cmdtype = a:cmdtype
+    let self.pattern = a:pattern
+    if a:0 >= 1
+	let self.tr = a:1
+    else
+	let self.tr = 1
+    endif
+endfun  "}}}
+fun! crdispatcher#CallbackClass.__transform_range__(current_dispatcher, range) dict "{{{
+    return a:range
+endfun  "}}}
+fun! crdispatcher#CallbackClass.__transform_args__(current_dispatcher, cmd_args) dict  "{{{
+    " This callback is used only be g command to transform patterns hidden in
+    " commands in its argument part: g/\vpat1/s/pat2/\U&\E/ -> s/\vpat2/...
+    return a:cmd_args
+endfun  "}}}
+fun! crdispatcher#CallbackClass.__transform_cmd__(dispatcher) dict  "{{{
+    if !{self.variableName} || a:dispatcher.cmdtype !=# self.cmdtype
+	let a:dispatcher.state = 1
+	return
+    endif
+    let matched = a:dispatcher.cmd.cmd =~# self.pattern
+    if matched
+	let a:dispatcher.state = 1
+	let cmd = a:dispatcher.cmd
+	let cmd.args = self.__transform_args__(a:dispatcher, cmd.args)
+	let pat = cmd.pattern
+	let pat_len = len(pat[1:])
+	if pat[0] ==# pat[-1]
+	    let pat_len -= 1
+	endif
+	if pat !~# g:DetectVeryMagicPattern && pat_len
+	    let cmd.pattern = pat[0].'\v'.pat[1:]
+	endif
+	let a:dispatcher.cmd = cmd
+	let a:dispatcher.cmdline = cmd.Join()
+    endif
+endfun  "}}}
