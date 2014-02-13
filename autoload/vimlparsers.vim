@@ -159,7 +159,7 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
     let cmdline = a:cmdline
     while !empty(cmdline)
 	if check_range == 1
-	    let decorator = matchstr(cmdline, '^\s*\(sil\%[ent]!\=\s*\|debug\s*\|\d*verb\%[ose]\s*\)*')
+	    let decorator = matchstr(cmdline, '^\v\C\s*(sil%[ent]!?\s*|debug\s*|\d*verb%[ose]\s*)*\s*($|\S@=)')
 	    let cmdline = cmdline[len(decorator):]
 	    if !global
 		let cmdl.decorator = decorator
@@ -184,7 +184,7 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	let match = matchstr(cmdline, s:s_cmd_pat)
 	if !empty(match)
 	    let _global = global
-	    if cmdline =~ '^\v\C\s*(g%[lobal]|v%[global])'
+	    if cmdline =~ '^\v\C\s*(g%[lobal]|v%[global])\s*($|\W@=)'
 		let global = 1
 	    endif
 	    if !_global
@@ -215,7 +215,7 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	    let idx += 1
 	    con
 	endif
-	let match = matchstr(cmdline, '^\v\s*s%[ubstitute]\s*') 
+	let match = matchstr(cmdline, '^\v\C\s*s%[ubstitute]\s*($\W@=)') 
 	if !empty(match)
 	    if !global
 		let cmdl.cmd .= match
@@ -255,7 +255,7 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	    let idx += 1
 	    con
 	endif
-	let match = matchstr(cmdline, '^\v\s*norm%[al]!?[[:space:]^a-zA-Z].*')
+	let match = matchstr(cmdline, '^\C\v\s*norm%[al]!?[[:space:]^a-zA-Z].*')
 	if !empty(match)
 	    if !global
 		let cmdl.cmd .= match
