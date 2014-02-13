@@ -73,9 +73,6 @@ fun! crdispatcher#CallbackClass.__init__(vname, cmdtype, pattern, ...) dict  "{{
 	let self.tr = 1
     endif
 endfun  "}}}
-fun! crdispatcher#CallbackClass.__transform_range__(current_dispatcher, range) dict "{{{
-    return a:range
-endfun  "}}}
 fun! crdispatcher#CallbackClass.__transform_args__(current_dispatcher, cmd_args) dict  "{{{
     " This callback is used only be g command to transform patterns hidden in
     " commands in its argument part: g/\vpat1/s/pat2/\U&\E/ -> s/\vpat2/...
