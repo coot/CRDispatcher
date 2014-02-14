@@ -141,6 +141,9 @@ let s:CmdLineClass = {
 	    \ 'pattern': '',
 	    \ 'args': '',
 	    \ }
+fun! s:CmdLineClass.Repr() dict
+    return '<CmdLine: ' .self['decorator'].':'.self['range'].':'.self['cmd'].':'.self['pattern'].':'.self['args'].'>'
+endfun
 fun! s:CmdLineClass.Join() dict
     return self['decorator'].self['range'].self['cmd'].self['pattern'].self['args']
 endfun  "}}}
