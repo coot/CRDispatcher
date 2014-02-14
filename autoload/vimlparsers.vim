@@ -160,7 +160,7 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
     let cmdline = a:cmdline
     while !empty(cmdline)
 	if check_range == 1
-	    let decorator = matchstr(cmdline, '^\v\C\s*(sil%[ent]!?\s*|debug\s*|\d*verb%[ose]\s*)*\s*($|\S@=)')
+	    let decorator = matchstr(cmdline, '^\v\C(:|\s)*(sil%[ent]!?\s*|debug\s*|\d*verb%[ose]\s*)*\s*($|\S@=)')
 	    let cmdline = cmdline[len(decorator):]
 	    let cmdl.decorator = decorator
 	    let [range, cmdline, error] = vimlparsers#ParseRange(cmdline)
@@ -177,6 +177,7 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	if !empty(match)
 	    let global = (cmdline =~ '^\v\C\s*(g%[lobal]|v%[global])\s*($|\W@=)' ? 1 : 0)
 	    let cmdl.global = global
+	    let cmdl.cmd .= match
 	    let idx += len(match)
 	    let cmdline = cmdline[len(match):]
 	    let [char, pat] = vimlparsers#ParsePattern(cmdline)
@@ -196,9 +197,10 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 		let check_range = 1
 	    endif
 	    let idx += 1
+	    let new_cmd = (global ? 1 : 0)
 	    con
 	endif
-	let match = matchstr(cmdline, '^\v\C\s*s%[ubstitute]\s*($\W@=)') 
+	let match = matchstr(cmdline, '^\v\C\s*s%[ubstitute]\s*($|\W@=)') 
 	if !empty(match)
 	    " echom "cmdline (sub): ".cmdline
 	    let new_cmd = 0
@@ -212,20 +214,21 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	    let idx += d
 	    let cmdline = cmdline[(d):]
 	    let [char, pat] = vimlparsers#ParsePattern(cmdline)
-	    let cmdl.args .= char.pat
+	    let cmdl.pattern .= char
+	    let cmdl.args .= pat
 	    let d = len(char.pat)
 	    let idx += d
+	    " echom "cmdline (sub): ".cmdline
 	    let cmdline = cmdline[(d):]
 	    if cmdline[0] == char
 		let idx += 1
 		let cmdl.args .= char
 		let cmdline = cmdline[1:]
-		let flags = matchstr(cmdline, '^\C[\&cegiInp#lr[:space:]]*')
+		let flags = matchstr(cmdline, '^\C[\&cegiInp\#lr[:space:]]*')
 		let cmdl.args .= flags
 		let cmdline = cmdline[len(flags):]
 	    endif
 	    let idx += 1
-	    con
 	endif
 	let match = matchstr(cmdline, s:bar_cmd_pat . '.*')
 	if !empty(match) && new_cmd
