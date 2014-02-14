@@ -242,6 +242,11 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	    let idx += len(match)
 	    let cmdline = cmdline[len(match):]
 	endif
+	let match = matchstr(cmdline, '^\w\+')
+	if !empty(match)
+	    let cmdl.cmd .= match
+	    let idx += len(match)
+	    let cmdline = cmdline[len(match):]
 	endif
 	let c = cmdline[0]
 	if c ==# '"'
