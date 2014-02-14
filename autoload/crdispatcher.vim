@@ -96,7 +96,7 @@ fun! crdispatcher#CallbackClass.__transform_cmd__(dispatcher) dict  "{{{
 	let cmd = a:dispatcher.cmd
 	let cmd.args = self.__transform_args__(a:dispatcher, cmd.args)
 	let pat = cmd.pattern
-	let pat_len = len(pat[1:])
+	let pat_len = len(pat[1:]) - 1
 	if pat[0] ==# pat[-1]
 	    let pat_len -= 1
 	endif
