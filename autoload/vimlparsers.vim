@@ -135,6 +135,7 @@ let s:s_cmd_pat = '^\v\C\s*('.
 " s:CmdLineClass {{{
 let s:CmdLineClass = {
 	    \ 'decorator': '',
+	    \ 'global': 0,
 	    \ 'range': '',
 	    \ 'cmd': '',
 	    \ 'pattern': '',
@@ -161,20 +162,11 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	if check_range == 1
 	    let decorator = matchstr(cmdline, '^\v\C\s*(sil%[ent]!?\s*|debug\s*|\d*verb%[ose]\s*)*\s*($|\S@=)')
 	    let cmdline = cmdline[len(decorator):]
-	    if !global
-		let cmdl.decorator = decorator
-	    else
-		let cmdl.args = decorator
-	    endif
-	    echo "cmdline: " . cmdline
+	    let cmdl.decorator = decorator
 	    let [range, cmdline, error] = vimlparsers#ParseRange(cmdline)
 	    echo range.":".cmdline.":".error
 	    let check_range = 0
-	    if !global
-		let cmdl.range = range
-	    else
-		let cmdl.args .= range
-	    endif
+	    let cmdl.range = range
 	    let idx += len(range) + 1
 	    let after_range = 1
 	    con
@@ -183,55 +175,39 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	endif
 	let match = matchstr(cmdline, s:s_cmd_pat)
 	if !empty(match)
-	    let _global = global
-	    if cmdline =~ '^\v\C\s*(g%[lobal]|v%[global])\s*($|\W@=)'
-		let global = 1
-	    endif
-	    if !_global
-		let cmdl.cmd .= match
-	    else
-		let cmdl.args .= match
-	    endif
+	    let global = (cmdline =~ '^\v\C\s*(g%[lobal]|v%[global])\s*($|\W@=)' ? 1 : 0)
+	    let cmdl.global = global
 	    let idx += len(match)
 	    let cmdline = cmdline[len(match):]
 	    let [char, pat] = vimlparsers#ParsePattern(cmdline)
-	    if !_global
-		let cmdl.pattern .= char.pat
-	    else
-		let cmdl.args .= char.pat
-	    endif
+	    let cmdl.pattern .= char.pat
 	    let d = len(char.pat)
 	    let idx += d
 	    let cmdline = cmdline[(d):]
 	    if cmdline[0] == char
-		if !_global
-		    let cmdl.pattern .= char
-		else
-		    let cmdl.args .= char
-		endif
+		let cmdl.pattern .= char
 		let idx += 1
 		let cmdline = cmdline[1:]
+	    endif
+	    if global
+		call add(cmdlines, cmdl)
+		let global = 0
+		let cmdl = copy(s:CmdLineClass)
+		let check_range = 1
 	    endif
 	    let idx += 1
 	    con
 	endif
 	let match = matchstr(cmdline, '^\v\C\s*s%[ubstitute]\s*($\W@=)') 
 	if !empty(match)
-	    if !global
-		let cmdl.cmd .= match
-	    else
-		let check_range = 1
-		let cmdl.args .= match
-	    endif
+	    " echom "cmdline (sub): ".cmdline
+	    let new_cmd = 0
+	    let cmdl.cmd .= match
 	    let d = len(match)
 	    let idx += d
 	    let cmdline = cmdline[(d):]
 	    let [char, pat] = vimlparsers#ParsePattern(cmdline)
-	    if !global
-		let cmdl.pattern .= char.pat
-	    else
-		let cmdl.args .= char.pat
-	    endif
+	    let cmdl.pattern .= char.pat
 	    let d = len(char.pat)
 	    let idx += d
 	    let cmdline = cmdline[(d):]
@@ -242,11 +218,7 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	    let cmdline = cmdline[(d):]
 	    if cmdline[0] == char
 		let idx += 1
-		if !global
-		    let cmdl.args .= char
-		else
-		    let cmdl.args .= char
-		endif
+		let cmdl.args .= char
 		let cmdline = cmdline[1:]
 		let flags = matchstr(cmdline, '^\C[\&cegiInp#lr[:space:]]*')
 		let cmdl.args .= flags
@@ -255,13 +227,9 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	    let idx += 1
 	    con
 	endif
-	let match = matchstr(cmdline, '^\C\v\s*norm%[al]!?[[:space:]^a-zA-Z].*')
-	if !empty(match)
-	    if !global
-		let cmdl.cmd .= match
-	    else
-		let cmdl.args .= match
-	    endif
+	let match = matchstr(cmdline, s:bar_cmd_pat . '.*')
+	if !empty(match) && new_cmd
+	    let cmdl.cmd .= match
 	    break
 	endif
 	let c = cmdline[0]
