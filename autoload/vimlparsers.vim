@@ -144,6 +144,41 @@ let s:CmdLineClass = {
 fun! s:CmdLineClass.Join() dict
     return self['decorator'].self['range'].self['cmd'].self['pattern'].self['args']
 endfun  "}}}
+" TODO :help function /{pattern}
+" see :help :\bar (the list below does not include global and vglobal
+" commands)
+let s:bar_cmd_pat = '^\v\C\s*('.
+	    \ 'argdo!?|'.
+	    \ 'au%[tocmd]|'.
+	    \ 'bufdo!?|'.
+	    \ 'com%[mand]|'.
+	    \ 'cscope|'.
+	    \ 'debug|'.
+	    \ 'foldopen!?|'.
+	    \ 'foldclose!?|'.
+	    \ 'function!?|'.
+	    \ 'h%[elp]|'.
+	    \ 'helpf%[ind]|'.
+	    \ 'lcscope|'.
+	    \ 'make|'.
+	    \ 'norm%[al]|'.
+	    \ 'pe%[rl]|'.
+	    \ 'perldo?|'.
+	    \ 'promptf%[ind]|'.
+	    \ 'promptr%[epl]|'.
+	    \ 'pyf%[ile]|'.
+	    \ 'py%[thon]|'.
+	    \ 'reg%[isters]|'.
+	    \ 'r%[ead]\s+!|'.
+	    \ 'scscope|'.
+	    \ 'sign|'.
+	    \ 'tcl|'.
+	    \ 'tcldo?|'.
+	    \ 'tclf%[ile]|'.
+	    \ 'windo|'.
+	    \ 'w%[rite]\s+!|'.
+	    \ '!'.
+	\ ')\s*%(\W|$)@='
 
 fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
     " returns command line splitted by |
