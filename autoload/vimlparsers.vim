@@ -198,16 +198,17 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
     endif
     let cmdline = a:cmdline
     while !empty(cmdline)
+	" echo 'cmdline: <'.cmdline.'>'
 	if check_range == 1
 	    let decorator = matchstr(cmdline, '^\v\C(:|\s)*(sil%[ent]!?\s*|debug\s*|\d*verb%[ose]\s*)*\s*($|\S@=)')
 	    let cmdline = cmdline[len(decorator):]
 	    let cmdl.decorator = decorator
 	    let [range, cmdline, error] = vimlparsers#ParseRange(cmdline)
-	    echo range.":".cmdline.":".error
 	    let check_range = 0
 	    let cmdl.range = range
 	    let idx += len(range) + 1
 	    let after_range = 1
+	    " echo cmdl.Repr()
 	    con
 	else
 	    let after_range = 0
