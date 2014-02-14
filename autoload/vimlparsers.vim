@@ -148,10 +148,11 @@ endfun  "}}}
 fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
     " returns command line splitted by |
     let cmdlines = []
-    let check_range = 1
     let idx = 0
     let cmdl = copy(s:CmdLineClass)
     let global = 0
+    let new_cmd = 1  " only after | or g command
+    let check_range = 1 " as above but it is reset on the begining, so it cannot be used later
     if a:cmdtype == '/' || a:cmdtype == '?'
 	let cmdl.pattern = a:cmdline
 	call add(cmdlines, cmdl)
@@ -246,7 +247,6 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	    let d= len(char.str.char)
 	    let idx += d + 1
 	    let cmdline = cmdline[(d):]
-	    con
 	elseif c ==# "'"
 	    let str = vimlparsers#ParseString(cmdline)
 	    if !empty(cmdl.pattern)
@@ -257,14 +257,13 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	    let d = len(str)
 	    let idx += d + 1
 	    let cmdline = cmdline[(d):]
-	    con
 	elseif c ==# "|"
 	    call add(cmdlines, cmdl)
 	    let cmdline = cmdline[1:]
 	    let cmdl = copy(s:CmdLineClass)
 	    let idx += 1
 	    let check_range = 1
-	    let global = 0
+	    let new_cmd = 1
 	    con
 	else
 	    if !empty(cmdl.pattern)
@@ -275,6 +274,7 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	    let idx += 1
 	    let cmdline = cmdline[1:]
 	endif
+	let new_cmd = 0
     endwhile
     call add(cmdlines, cmdl) 
     return cmdlines
