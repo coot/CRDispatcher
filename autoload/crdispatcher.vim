@@ -27,8 +27,7 @@ fun! crdispatcher#CRDispatcher.dispatch(...) dict "{{{
     else
 	let self.cmdtype = getcmdtype()
     endif
-    let self.space = matchstr(self.cmdline_orig, '\v^%(:|\s)*')
-    let self.line = self.cmdline_orig[len(self.space):]
+    let self.line = self.cmdline_orig
     let self.cmds = vimlparsers#ParseCommandLine(self.cmdline_orig, self.cmdtype)
     let cidx = 0
     let clen = len(self.callbacks)
@@ -46,7 +45,6 @@ fun! crdispatcher#CRDispatcher.dispatch(...) dict "{{{
 	    if type(F) == 4
 		call F.__transform_cmd__(self)
 	    elseif type(F) == 2
-		echo F
 		call F(self)
 	    endif
 	    if self.state == 2
@@ -58,8 +56,17 @@ fun! crdispatcher#CRDispatcher.dispatch(...) dict "{{{
 	endwhile
 	unlet F
     endwhile
-    let cmdlines = map(self.cmds, 'v:val.Join()')
-    return self['space'].join(cmdlines, '|')
+    let cmdline = ''
+    let clen = len(self.cmds)
+    for idx in range(clen)
+	let cmd = self.cmds[idx]
+	let cmdl = cmd.Join()
+	let cmdline .= cmdl
+	if !cmd.global && idx != clen - 1
+	    let cmdline .= '|'
+	endif
+    endfor
+    return cmdline
 endfun "}}}
 
 let crdispatcher#CallbackClass = {}
