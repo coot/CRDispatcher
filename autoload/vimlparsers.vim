@@ -19,24 +19,24 @@ fun! vimlparsers#ParseRange(cmdline) " {{{
 	    let add = matchstr(cmdline, '\v^\s*\d+'.s:range_modifier)
 	    let range .= add
 	    let cmdline = cmdline[len(add):]
-	    echom 1
+	    " echom 1
 	    " echom range
 	elseif cmdline =~ '^\s*[-+]'
 	    let add = matchstr(cmdline, '\v^\s*'.s:range_modifier)
 	    let range .= add
 	    let cmdline = cmdline[len(add):]
-	    echom 2
+	    " echom 2
 	elseif cmdline =~ '^\.\s*'
 	    let add = matchstr(cmdline, '\v^\s*\.'.s:range_modifier)
 	    let range .= add
 	    let cmdline = cmdline[len(add):]
-	    echom 3
+	    " echom 3
 	    " echom range
 	elseif cmdline =~ '^\s*\\[&/?]'
 	    let add = matchstr(cmdline, '^\v\s*\\[/&?]'.s:range_modifier)
 	    let range .= add
 	    let cmdline = cmdline[len(add):]
-	    echom 4
+	    " echom 4
 	    " echom range
 	elseif cmdline =~ '^\s*[?/]'
 	    let add = matchstr(cmdline, '^\v\s*[?/]@=')
@@ -49,19 +49,19 @@ fun! vimlparsers#ParseRange(cmdline) " {{{
 	    let add = matchstr(cmdline, '^\v'.s:range_modifier)
 	    let range .= add
 	    let cmdline = cmdline[len(add):]
-	    echom 5
+	    " echom 5
 	    " echom range . "<F>".cmdline."<"
 	elseif cmdline =~ '^\s*\$'
 	    let add = matchstr(cmdline, '\v^\s*\$'.s:range_modifier)
 	    let range .= add
 	    let cmdline = cmdline[len(add):]
-	    echom 6
+	    " echom 6
 	    " echom range
 	elseif cmdline =~ '^\v[[:space:];,]+'  " yes you can do :1,^t;;; ,10# and it will work like :1,10#
 	    let add = matchstr(cmdline,  '^\v[[:space:];,]+')
 	    let range .= add
 	    let cmdline = cmdline[len(add):]
-	    echom 7
+	    " echom 7
 	elseif cmdline =~ '^\v\s*[''`][a-zA-Z<>`'']'
 	    let add = matchstr(cmdline, '^\v\s*[''`][a-zA-Z<>`'']') 
 	    let range .= add
