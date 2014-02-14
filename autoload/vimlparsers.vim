@@ -236,6 +236,13 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	    let cmdl.cmd .= match
 	    break
 	endif
+	let match = matchstr(cmdline, '^\C\v\s*se%[t]([^\|]|%(%(\\\\)*)@>\\\|)*')
+	if !empty(match) && new_cmd
+	    let cmdl.cmd .= match
+	    let idx += len(match)
+	    let cmdline = cmdline[len(match):]
+	endif
+	endif
 	let c = cmdline[0]
 	if c ==# '"'
 	    let [char, str] = vimlparsers#ParsePattern(cmdline)
