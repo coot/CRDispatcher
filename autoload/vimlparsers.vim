@@ -197,6 +197,7 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
     let cmdl = copy(s:CmdLineClass)
     let global = 0
     let new_cmd = 1  " only after | or g command
+    let fun = 0  " expect call <...> or let <...>
     let check_range = 1 " as above but it is reset on the begining, so it cannot be used later
     if a:cmdtype == '/' || a:cmdtype == '?'
 	let cmdl.pattern = a:cmdline
@@ -221,7 +222,7 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	    let after_range = 0
 	endif
 	let match = matchstr(cmdline, s:s_cmd_pat)
-	if !empty(match)
+	if !empty(match) && !fun 
 	    let global = (cmdline =~ '^\v\C\s*(g%[lobal]|v%[global])\s*($|\W@=)' ? 1 : 0)
 	    let cmdl.global = global
 	    let cmdl.cmd .= match
@@ -248,7 +249,7 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	    con
 	endif
 	let match = matchstr(cmdline, '^\v\C\s*s%[ubstitute]\s*($|\W@=)') 
-	if !empty(match)
+	if !empty(match) && !fun
 	    " echom "cmdline (sub): ".cmdline
 	    let new_cmd = 0
 	    let cmdl.cmd .= match
@@ -278,17 +279,29 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	    let idx += 1
 	endif
 	let match = matchstr(cmdline, s:bar_cmd_pat . '.*')
-	if !empty(match) && new_cmd
+	if !empty(match) && new_cmd && !fun
 	    let cmdl.cmd .= match
 	    break
 	endif
 	let match = matchstr(cmdline, '^\C\v\s*se%[t]([^\|]|%(%(\\\\)*)@>\\\|)*')
-	if !empty(match) && new_cmd
+	if !empty(match) && new_cmd && !fun
 	    let cmdl.cmd .= match
 	    let idx += len(match)
 	    let cmdline = cmdline[len(match):]
 	endif
 	let match = matchstr(cmdline, '^\w\+')
+	let match = matchstr(cmdline, '^\v\C(call|let|echo)($|\W@=)\s*')
+	if !empty(match) && !fun
+	    let cmdl.cmd .= match
+	    let idx += len(match)
+	    let cmdline = cmdline[len(match):]
+	    let fun = 1
+	endif
+	if fun
+	    let match = matchstr(cmdline, '^(\w:)?\w\+')
+	else
+	    let match = matchstr(cmdline, '^\w\+')
+	endif
 	if !empty(match)
 	    let cmdl.cmd .= match
 	    let idx += len(match)
