@@ -289,7 +289,22 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	    let idx += len(match)
 	    let cmdline = cmdline[len(match):]
 	endif
-	let match = matchstr(cmdline, '^\w\+')
+	let match = matchstr(cmdline, s:edit_cmd_pat)
+	if !empty(match) && new_cmd && !fun
+	    let match = matchstr(cmdline, '^\v\w+!?\s+'.
+			\ '%('.
+			    \ '\+\/%([^[:space:]]|'.
+				\ '%(%(%(\\\\)*)@>\\)@6<=\s'.
+			    \ ')*|'.
+			    \ '%('.
+				\ '[^|]|'.
+				\ '%(%(%(\\\\)*)@>\\)@6<=\|'.
+			    \ ')*'.
+			\ ')*')
+	    let cmdl.cmd .= match
+	    let idx += len(match)
+	    let cmdline = cmdline[len(match):]
+	endif
 	let match = matchstr(cmdline, '^\v\C(call|let|echo)($|\W@=)\s*')
 	if !empty(match) && !fun
 	    let cmdl.cmd .= match
