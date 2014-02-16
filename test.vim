@@ -141,8 +141,16 @@ let cmd="call g:CRDispacther.dispatch(0, cmd, ':')"
 let _res = [{'cmd': 'call g:CRDispacther.dispatch(0, cmd, '':'')', 'range': '', 'pattern': '', 'global': 0, 'decorator': '', 'args': ''}]
 call s:Test(cmd, _res, ':', 1)
 
+let cmd="echo g:CRDispacther.dispatch(0, cmd, ':')"
+let _res = [{'cmd': 'echo g:CRDispacther.dispatch(0, cmd, '':'')', 'range': '', 'pattern': '', 'global': 0, 'decorator': '', 'args': ''}]
+call s:Test(cmd, _res, ':', 1)
+
 let cmd="silent echo \"ok\"| debug ls"
 let _res=[{'cmd': 'echo "ok"', 'range': '', 'pattern': '', 'global': 0, 'decorator': 'silent ', 'args': ''}, {'cmd': 'ls', 'range': '', 'pattern': '', 'global': 0, 'decorator': ' debug ', 'args': ''}]
+call s:Test(cmd, _res, ':', 1)
+
+let cmd="edit +/(aaa|bbb|\\ ) file.txt|ls" 
+let _res=[{'cmd': 'edit +/(aaa|bbb|\ ) file.txt', 'range': '', 'pattern': '', 'global': 0, 'decorator': '', 'args': ''}, {'cmd': 'ls', 'range': '', 'pattern': '', 'global': 0, 'decorator': '', 'args': ''}]
 call s:Test(cmd, _res, ':', 1)
 
 if s:failed == 0
