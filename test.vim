@@ -153,6 +153,12 @@ let cmd="edit +/(aaa|bbb|\\ ) file.txt|ls"
 let _res=[{'cmd': 'edit +/(aaa|bbb|\ ) file.txt', 'range': '', 'pattern': '', 'global': 0, 'decorator': '', 'args': ''}, {'cmd': 'ls', 'range': '', 'pattern': '', 'global': 0, 'decorator': '', 'args': ''}]
 call s:Test(cmd, _res, ':', 1)
 
+let cmd='fun /^(a|b|c)'
+let res='fun /\v^(a|b|c)'
+let _res=[{'cmd': 'fun ', 'range': '', 'pattern': '/^(a|b|c)', 'global': 0, 'decorator': '', 'args': ''}]
+call s:Test(cmd, res, ':')
+call s:Test(cmd, _res, ':', 1)
+
 if s:failed == 0
     echohl Title
     echom "All tests passed!"

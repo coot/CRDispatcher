@@ -305,7 +305,15 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	    let idx += len(match)
 	    let cmdline = cmdline[len(match):]
 	endif
-	let match = matchstr(cmdline, '^\v\C(call|let|echo)($|\W@=)\s*')
+	let matches = matchlist(cmdline, '^\v\C(fu%[nction]\s+)(\/.*)')
+	if !empty(matches) && new_cmd && !fun
+	    let cmdl.cmd .= matches[1]
+	    let cmdl.pattern = matches[2]
+	    let idx = len(matches[1])
+	    let cmdline = ''
+	endif
+	unlet matches
+	let match = matchstr(cmdline, '^\v\C%(call|let|echo)($|\W@=)\s*')
 	if !empty(match) && !fun
 	    let cmdl.cmd .= match
 	    let idx += len(match)
