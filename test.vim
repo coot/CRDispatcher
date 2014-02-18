@@ -8,6 +8,7 @@ let g:VeryMagicGlobal = 1
 let g:VeryMagicVimGrep = 1
 let g:VeryMagicRange = 1
 let g:VeryMagicSearchArg = 1
+let g:VeryMagicHelpgrep = 1
 let g:VeryMagicEscapeBackslashesInSearchArg = 1
 
 let s:test_id = 0
@@ -156,6 +157,12 @@ call s:Test(cmd, _res, ':', 1)
 let cmd='fun /^(a|b|c)'
 let res='fun /\v^(a|b|c)'
 let _res=[{'cmd': 'fun ', 'range': '', 'pattern': '/^(a|b|c)', 'global': 0, 'decorator': '', 'args': ''}]
+call s:Test(cmd, res, ':')
+call s:Test(cmd, _res, ':', 1)
+
+let cmd='helpgrep abc|ls'
+let res='helpgrep \vabc|ls'
+let _res=[{'cmd': 'helpgrep abc|ls', 'range': '', 'pattern': '', 'global': 0, 'decorator': '', 'args': ''}]
 call s:Test(cmd, res, ':')
 call s:Test(cmd, _res, ':', 1)
 
