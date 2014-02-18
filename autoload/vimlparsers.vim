@@ -180,6 +180,8 @@ let s:bar_cmd_pat = '^\v\C\s*('.
 	    \ 'tclf%[ile]|'.
 	    \ 'windo|'.
 	    \ 'w%[rite]\s+!|'.
+	    \ 'helpg%[rep]|'.
+	    \ 'lh%[elpgrep]|'.
 	    \ '!'.
 	\ ')\s*%(\W|$)@='
 let s:edit_cmd_pat = '^\v\C\s*('.
