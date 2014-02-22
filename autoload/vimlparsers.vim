@@ -182,10 +182,11 @@ let s:bar_cmd_pat = '^\v\C\s*('.
 	    \ 'w%[rite]\s+!|'.
 	    \ 'helpg%[rep]|'.
 	    \ 'lh%[elpgrep]|'.
-	    \ '\!.*'.
+	    \ '%(r%[ead]\s*)?\!.*'.
 	\ ')\s*%(\W|$)@='
 let s:edit_cmd_pat = '^\v\C\s*('.
 		\ 'e%[dit]!?|'.
+		\ 'r%[ead]|'.
 		\ 'sp%[lit]!?|'.
 		\ 'vs%[plit]!?|'.
 		\ 'find?!?'.

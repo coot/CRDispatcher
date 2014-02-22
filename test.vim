@@ -172,6 +172,11 @@ let _res=[{'cmd': 'helpgrep abc|ls', 'range': '', 'pattern': '', 'global': 0, 'd
 call s:Test(cmd, res, ':')
 call s:Test(cmd, _res, ':', 1)
 
+let cmd='rea !ls -l| grep root'
+let _res=[{'cmd': 'rea !ls -l| grep root', 'range': '', 'pattern': '', 'global': 0, 'decorator': '', 'args': ''}]
+call s:Test(cmd, cmd, ':')
+call s:Test(cmd, _res, ':', 1)
+
 if s:failed == 0
     echohl Title
     echom "All tests passed!"
