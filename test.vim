@@ -85,6 +85,12 @@ let _res=[{'cmd': 'ls', 'range': '', 'pattern': '', 'global': 0, 'decorator': ''
 call s:Test(cmd, res, ':')
 call s:Test(cmd, _res, ':', 1)
 
+let cmd="!ls|grep -v 'vim'"
+let res=cmd
+let _res=[{'cmd': '!ls|grep -v ''vim''', 'range': '', 'pattern': '', 'global': 0, 'decorator': '', 'args': ''}]
+call s:Test(cmd, res, ':')
+call s:Test(cmd, _res, ':', 1)
+
 let cmd=" :: % s #<x>#\\u\\&|/(a|b)/;$normal 10|D"
 " There is no # before # so the s command should consume till the end of the
 " line.
