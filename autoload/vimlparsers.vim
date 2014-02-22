@@ -130,7 +130,7 @@ let s:s_cmd_pat = '^\v\C\s*('.
 	    \ 'v%[global]'.
 	    \ 'vim%[grep]|'.
 	    \ 'lv%[imgrep]'.
-	    \ ')($|\W@=|\s*)'
+	    \ ')($|\W@=|\s+)'
 
 " s:CmdLineClass {{{
 let s:CmdLineClass = {
@@ -182,7 +182,7 @@ let s:bar_cmd_pat = '^\v\C\s*('.
 	    \ 'w%[rite]\s+!|'.
 	    \ 'helpg%[rep]|'.
 	    \ 'lh%[elpgrep]|'.
-	    \ '!'.
+	    \ '\!.*'.
 	\ ')\s*%(\W|$)@='
 let s:edit_cmd_pat = '^\v\C\s*('.
 		\ 'e%[dit]!?|'.
