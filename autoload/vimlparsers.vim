@@ -125,7 +125,7 @@ fun! vimlparsers#ParseString(str)  "{{{
     return a:str[:i]
 endfun  "}}}
 
-let s:s_cmd_pat = '^\v\C\s*('.
+let vimlparsers#s_cmd_pat = '^\v\C\s*('.
 	    \ 'g%[lobal]|'.
 	    \ 'v%[global]'.
 	    \ 'vim%[grep]|'.
@@ -150,7 +150,7 @@ endfun  "}}}
 " TODO :help function /{pattern}
 " see :help :\bar (the list below does not include global and vglobal
 " commands)
-let s:bar_cmd_pat = '^\v\C\s*('.
+let vimlparsers#bar_cmd_pat = '^\v\C\s*('.
 	    \ 'argdo!?|'.
 	    \ 'au%[tocmd]|'.
 	    \ 'bufdo!?|'.
@@ -184,13 +184,18 @@ let s:bar_cmd_pat = '^\v\C\s*('.
 	    \ 'lh%[elpgrep]|'.
 	    \ '%(r%[ead]\s*)?\!.*'.
 	\ ')\s*%(\W|$)@='
-let s:edit_cmd_pat = '^\v\C\s*('.
+let vimlparsers#edit_cmd_pat = '^\v\C\s*('.
 		\ 'e%[dit]!?|'.
+		\ 'view?|'.
 		\ 'r%[ead]|'.
 		\ 'sp%[lit]!?|'.
 		\ 'vs%[plit]!?|'.
-		\ 'find?!?'.
-		\ 'sf%[ind]!?'.
+		\ 'find?!?|'.
+		\ 'sf%[ind]!?|'.
+		\ 'sv%[iew]!?|'.
+		\ 'new!?|'.
+		\ 'vnew?!?|'.
+		\ 'vi%[sual]!?'.
 	    \ ')%($|\W@=)'
 
 fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
@@ -224,7 +229,7 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	else
 	    let after_range = 0
 	endif
-	let match = matchstr(cmdline, s:s_cmd_pat)
+	let match = matchstr(cmdline, g:vimlparsers#s_cmd_pat)
 	if !empty(match) && !fun 
 	    let global = (cmdline =~ '^\v\C\s*(g%[lobal]|v%[global])\s*($|\W@=)' ? 1 : 0)
 	    let cmdl.global = global
@@ -281,7 +286,7 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	    endif
 	    let idx += 1
 	endif
-	let match = matchstr(cmdline, s:bar_cmd_pat . '.*')
+	let match = matchstr(cmdline, g:vimlparsers#bar_cmd_pat . '.*')
 	if !empty(match) && new_cmd && !fun
 	    let cmdl.cmd .= match
 	    break
@@ -292,7 +297,7 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	    let idx += len(match)
 	    let cmdline = cmdline[len(match):]
 	endif
-	let match = matchstr(cmdline, s:edit_cmd_pat)
+	let match = matchstr(cmdline, g:vimlparsers#edit_cmd_pat)
 	if !empty(match) && new_cmd && !fun
 	    let match = matchstr(cmdline, '^\v\w+!?\s+'.
 			\ '%('.
