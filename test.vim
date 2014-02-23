@@ -10,6 +10,7 @@ let g:VeryMagicRange = 1
 let g:VeryMagicSearchArg = 1
 let g:VeryMagicHelpgrep = 1
 let g:VeryMagicEscapeBackslashesInSearchArg = 1
+let g:SortEditArgs = 1
 
 let s:test_id = 0
 let s:failed = 0
@@ -160,6 +161,10 @@ let cmd="edit +/(aaa|bbb|\\ ) file.txt|ls"
 let _res=[{'cmd': 'edit +/(aaa|bbb|\ ) file.txt', 'range': '', 'pattern': '', 'global': 0, 'decorator': '', 'args': ''}, {'cmd': 'ls', 'range': '', 'pattern': '', 'global': 0, 'decorator': '', 'args': ''}]
 call s:Test(cmd, _res, ':', 1)
 
+let cmd='edit +/abc\\\ def\\ (file)'
+let res='edit +/\\vabc\\\ def\\ (file)'
+call s:Test(cmd, res, ':')
+
 let cmd='fun /^(a|b|c)'
 let res='fun /\v^(a|b|c)'
 let _res=[{'cmd': 'fun ', 'range': '', 'pattern': '/^(a|b|c)', 'global': 0, 'decorator': '', 'args': ''}]
@@ -176,6 +181,14 @@ let cmd='rea !ls -l| grep root'
 let _res=[{'cmd': 'rea !ls -l| grep root', 'range': '', 'pattern': '', 'global': 0, 'decorator': '', 'args': ''}]
 call s:Test(cmd, cmd, ':')
 call s:Test(cmd, _res, ':', 1)
+
+let cmd='edit file.txt +/abc\ def ++ff=dos'
+let res='edit +/\\vabc\\ def ++ff=dos file.txt'
+call s:Test(cmd, res, ':')
+
+let cmd='edit file.txt ++ff=dos +set\ path=/home/my\ name'
+let res='edit ++ff=dos +set\ path=/home/my\ name file.txt'
+call s:Test(cmd, res, ':')
 
 if s:failed == 0
     echohl Title
