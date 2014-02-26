@@ -190,6 +190,12 @@ let cmd='edit file.txt ++ff=dos +set\ path=/home/my\ name'
 let res='edit ++ff=dos +set\ path=/home/my\ name file.txt'
 call s:Test(cmd, res, ':')
 
+let cmd='lv /\C(aaa|bbb)/ *.py'
+let res='lv /\v\C(aaa|bbb)/ *.py'
+let _res=[{'cmd': 'lv ', 'range': '', 'pattern': '/\C(aaa|bbb)/', 'global': 0, 'decorator': '', 'args': ' *.py'}]
+call s:Test(cmd, res, ':')
+call s:Test(cmd, _res, ':', 1)
+
 if s:failed == 0
     echohl Title
     echom "All tests passed!"
