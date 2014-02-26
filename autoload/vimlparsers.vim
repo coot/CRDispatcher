@@ -126,11 +126,11 @@ fun! vimlparsers#ParseString(str)  "{{{
 endfun  "}}}
 
 let vimlparsers#s_cmd_pat = '^\v\C\s*('.
-	    \ 'g%[lobal]|'.
-	    \ 'v%[global]'.
-	    \ 'vim%[grep]|'.
-	    \ 'lv%[imgrep]'.
-	    \ ')($|\W@=|\s+)'
+	    \ 'g%[lobal]\s*|'.
+	    \ 'v%[global]\s*|'.
+	    \ 'vim%[grep]\s*|'.
+	    \ 'lv%[imgrep]\s*'.
+	    \ ')($|\W@=)'
 
 " s:CmdLineClass {{{
 let s:CmdLineClass = {
