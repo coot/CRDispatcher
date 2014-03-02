@@ -301,12 +301,12 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	if !empty(match) && new_cmd && !fun
 	    let match = matchstr(cmdline, '^\v\w+!?\s+'.
 			\ '%('.
-			    \ '\+\/%([^[:space:]]|'.
+			    \ '\s*\+%([^[:space:]]|'.
 				\ '%(%(%(\\\\)*)@>\\)@10<=\s'.
 			    \ ')*|'.
-			    \ '%('.
-				\ '[^|]|'.
-				\ '%(%(%(\\\\)*)@>\\)@10<=\|'.
+			    \ '\s*%('.
+				\ '[^|[:space:]]|'.
+				\ '%(%(%(\\\\)*)@>\\)@10<=\|[|[:space:]]'.
 			    \ ')*'.
 			\ ')*')
 	    let cmdl.cmd .= match

@@ -196,6 +196,12 @@ let _res=[{'cmd': 'lv ', 'range': '', 'pattern': '/\C(aaa|bbb)/', 'global': 0, '
 call s:Test(cmd, res, ':')
 call s:Test(cmd, _res, ':', 1)
 
+let cmd='edit file\ space.txt ++ff=dos +/(aaa|bbb|\ +)'
+let res='edit ++ff=dos +/\\v(aaa|bbb|\\ +) file\ space.txt'
+let _res=[{'cmd': 'edit file\ space.txt ++ff=dos +/(aaa|bbb|\ +)', 'range': '', 'pattern': '', 'global': 0, 'decorator': '', 'args': ''}]
+call s:Test(cmd, res, ':')
+call s:Test(cmd, _res, ':', 1)
+
 if s:failed == 0
     echohl Title
     echom "All tests passed!"
