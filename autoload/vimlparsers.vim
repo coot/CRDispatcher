@@ -231,7 +231,7 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	endif
 	let match = matchstr(cmdline, g:vimlparsers#s_cmd_pat)
 	if !empty(match) && !fun 
-	    let global = (cmdline =~ '^\v\C\s*(g%[lobal]|v%[global])\s*($|\W@=)' ? 1 : 0)
+	    let global = (cmdline =~ '^\v\C\s*%(g%[lobal]|v%[global])\s*%($|\W@=)' ? 1 : 0)
 	    let cmdl.global = global
 	    let cmdl.cmd .= match
 	    let idx += len(match)
