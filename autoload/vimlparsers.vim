@@ -195,8 +195,17 @@ let vimlparsers#edit_cmd_pat = '^\v\C\s*('.
 		\ 'sv%[iew]!?|'.
 		\ 'new!?|'.
 		\ 'vnew?!?|'.
-		\ 'vi%[sual]!?'.
+		\ 'vi%[sual]!?|'.
+		\ 'ar%[gs]|'.
+		\ 'arge%[dit]!?|'.
+		\ 'w[nN]%[ext]!?|'.
+		\ 'wp%[revious]!?|'.
+		\ 'sav%[eas]!?|'.
+		\ 'wq!?|'.
+		\ 'exi%[t]!?|'.
 	    \ ')%($|\W@=)'
+" :args command is not supported :args [++opt] [+cmd] {arglist}
+" :write, :update commands are not supported: :w [++opt] >> {file}
 let vimlparsers#fname_cmds_pat = '^\v\C\s*('.
 		\ '%('.
 		    \ 's?b%[uffer]!?|'.
