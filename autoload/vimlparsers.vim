@@ -125,6 +125,13 @@ fun! vimlparsers#ParseString(str)  "{{{
     return a:str[:i]
 endfun  "}}}
 
+let vimlparsers#cmd_decorators_pat = '^\v\C(:|\s)*('.
+		\ 'sil%[ent]!?\s*|'.
+		\ 'debug\s*|'.
+		\ 'noswap%[file]\s*|'.
+		\ '\d*verb%[ose]\s*'.
+	    \ ')*\s*($|\S@=)'
+
 let vimlparsers#s_cmd_pat = '^\v\C\s*('.
 	    \ 'g%[lobal]\s*|'.
 	    \ 'v%[global]\s*|'.
@@ -184,6 +191,7 @@ let vimlparsers#bar_cmd_pat = '^\v\C\s*('.
 	    \ 'lh%[elpgrep]|'.
 	    \ '%(r%[ead]\s*)?\!.*'.
 	\ ')\s*%(\W|$)@='
+
 let vimlparsers#edit_cmd_pat = '^\v\C\s*('.
 		\ 'e%[dit]!?|'.
 		\ 'view?|'.
@@ -206,6 +214,7 @@ let vimlparsers#edit_cmd_pat = '^\v\C\s*('.
 	    \ ')%($|\W@=)'
 " :args command is not supported :args [++opt] [+cmd] {arglist}
 " :write, :update commands are not supported: :w [++opt] >> {file}
+
 let vimlparsers#fname_cmds_pat = '^\v\C\s*('.
 		\ '%('.
 		    \ 's?b%[uffer]!?|'.
@@ -234,7 +243,7 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
     while !empty(cmdline)
 	" echo 'cmdline: <'.cmdline.'>'
 	if check_range == 1
-	    let decorator = matchstr(cmdline, '^\v\C(:|\s)*(sil%[ent]!?\s*|debug\s*|\d*verb%[ose]\s*)*\s*($|\S@=)')
+	    let decorator = matchstr(cmdline, g:vimlparsers#cmd_decorators_pat)
 	    let cmdline = cmdline[len(decorator):]
 	    let cmdl.decorator = decorator
 	    let [range, cmdline, error] = vimlparsers#ParseRange(cmdline)
