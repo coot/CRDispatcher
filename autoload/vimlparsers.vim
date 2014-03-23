@@ -197,6 +197,15 @@ let vimlparsers#edit_cmd_pat = '^\v\C\s*('.
 		\ 'vnew?!?|'.
 		\ 'vi%[sual]!?'.
 	    \ ')%($|\W@=)'
+let vimlparsers#fname_cmds_pat = '^\v\C\s*('.
+		\ '%('.
+		    \ 's?b%[uffer]!?|'.
+		    \ 'bdelete!?|'.
+		    \ 'bunload!?|'.
+		    \ 'bw%[ipeout]!?'.
+		\ ')'.
+		\ '\s*%(\f|%(%(\\\\)*)@>\\[|\s])*'.
+	    \ ')'
 
 fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
     " returns command line splitted by |
@@ -321,6 +330,12 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	    let cmdline = ''
 	endif
 	unlet matches
+	let match = matchstr(cmdline, g:vimlparsers#fname_cmds_pat)
+	if !empty(match) && !fun
+	    let cmdl.cmd .= match
+	    let idx += len(match)
+	    let cmdline = cmdline[len(match):]
+	endif
 	let match = matchstr(cmdline, '^\v\C%(call|let|echo)($|\W@=)\s*')
 	if !empty(match) && !fun
 	    let cmdl.cmd .= match
