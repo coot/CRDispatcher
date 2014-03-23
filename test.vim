@@ -205,9 +205,15 @@ call s:Test(cmd, _res, ':', 1)
 let cmd='edit file\ space.txt ++ff=dos +/(aaa|bbb|\ +) |ls'
 " Note: if there is no ' ' before '|ls' the '|ls' will be included in the
 " pattern.
-let _res=[{'cmd': 'edit file\ space.txt ++ff=dos +/(aaa|bbb|\ +) ', 'range':
-'', 'pattern': '', 'global': 0, 'decorator': '', 'args': ''}, {'cmd': 'ls',
-'range': '', 'pattern': '', 'global': 0, 'decorator': '', 'args': ''}]
+let _res=[{'cmd': 'edit file\ space.txt ++ff=dos +/(aaa|bbb|\ +) ', 'range': '', 'pattern': '', 'global': 0, 'decorator': '', 'args': ''}, {'cmd': 'ls', 'range': '', 'pattern': '', 'global': 0, 'decorator': '', 'args': ''}]
+call s:Test(cmd, _res, ':', 1)
+
+let cmd='10,20>15|edit abc'
+let _res=[{'cmd': '>15', 'range': '10,20', 'pattern': '', 'global': 0, 'decorator': '', 'args': ''}, {'cmd': 'edit abc', 'range': '', 'pattern': '', 'global': 0, 'decorator': '', 'args': ''}]
+call s:Test(cmd, _res, ':', 1)
+
+let cmd='b ~/.vim/colors/sunny.vim'
+let _res=[{'cmd': 'b ~/.vim/colors/sunny.vim', 'range': '', 'pattern': '', 'global': 0, 'decorator': '', 'args': ''}]
 call s:Test(cmd, _res, ':', 1)
 
 if s:failed == 0
