@@ -216,6 +216,10 @@ let cmd='b ~/.vim/colors/sunny.vim'
 let _res=[{'cmd': 'b ~/.vim/colors/sunny.vim', 'range': '', 'pattern': '', 'global': 0, 'decorator': '', 'args': ''}]
 call s:Test(cmd, _res, ':', 1)
 
+let cmd='psearch! 5 regular|expression'
+let _res=[{'cmd': 'psearch! 5 ', 'range': '', 'pattern': 'regular|expression', 'global': 0, 'decorator': '', 'args': ''}]
+call s:Test(cmd, _res, ':', 1)
+
 if s:failed == 0
     echohl Title
     echom "All tests passed!"

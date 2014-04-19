@@ -313,6 +313,12 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	    endif
 	    let idx += 1
 	endif
+	let matchlist = matchlist(cmdline, '^\v(ps%[earch]!?)(\s*\d*\s*)?(.*)')
+	if !empty(matchlist)
+	    let cmdl.cmd .= matchlist[1] . matchlist[2]
+	    let cmdl.pattern = matchlist[3]
+	    break
+	endif
 	let match = matchstr(cmdline, g:vimlparsers#bar_cmd_pat . '.*')
 	if !empty(match) && new_cmd && !fun
 	    let cmdl.cmd .= match
