@@ -99,15 +99,23 @@ fun! crdispatcher#CallbackClass.__transform_cmd__(dispatcher) dict  "{{{
 	let mlist = matchlist(pat, '\v^(\s*)(.{-})(\s*)$')
 	let pat = mlist[2]
 	let pat_len = len(pat)
-	if pat[0] ==# pat[len(pat)-1]
-	    let pat_len -= 2
+	if cmd.cmd =~# '^\v\s*fun%[ction]>'
 	    let char = pat[0]
-	    let pat = pat[1:len(pat)-2]
+	    let pat = pat[1:]
+	    if pat_len > 0 && pat !~# g:DetectVeryMagicPattern
+		let cmd.pattern = mlist[1].char.'\v'.pat.mlist[3]
+	    endif
 	else
-	    let char = ''
-	endif
-	if pat_len > 0 && pat !~# g:DetectVeryMagicPattern
-	    let cmd.pattern = mlist[1].char.'\v'.pat.char.mlist[3]
+	    if pat[0] ==# pat[len(pat)-1]
+		let pat_len -= 2
+		let char = pat[0]
+		let pat = pat[1:len(pat)-2]
+	    else
+		let char = ''
+	    endif
+	    if pat_len > 0 && pat !~# g:DetectVeryMagicPattern
+		let cmd.pattern = mlist[1].char.'\v'.pat.char.mlist[3]
+	    endif
 	endif
 	let a:dispatcher.cmd = cmd
 	let a:dispatcher.cmdline = cmd.Join()
