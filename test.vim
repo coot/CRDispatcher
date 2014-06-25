@@ -220,6 +220,10 @@ let cmd='psearch! 5 regular|expression'
 let _res=[{'cmd': 'psearch! 5 ', 'range': '', 'pattern': 'regular|expression', 'global': 0, 'decorator': '', 'args': ''}]
 call s:Test(cmd, _res, ':', 1)
 
+let cmd='lv /pattern/ *.vim'
+let _res=[{'cmd': 'lv ', 'range': '', 'pattern': '/pattern/', 'global': 0, 'decorator': '', 'args': ' *.vim'}]
+call s:Test(cmd, _res, ':', 1)
+
 if s:failed == 0
     echohl Title
     echom "All tests passed!"
