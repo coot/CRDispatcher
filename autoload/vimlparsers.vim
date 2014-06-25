@@ -138,6 +138,10 @@ let vimlparsers#s_cmd_pat = '^\v\C\s*('.
 	    \ 'vim%[grep]\s*|'.
 	    \ 'lv%[imgrep]\s*'.
 	    \ ')($|\W@=)'
+let vimlparsers#grep_cmd_pat = '^\v\C\s*('.
+	    \ 'vim%[grep]\s*|'.
+	    \ 'lv%[imgrep]\s*'.
+	    \ ')($|\W@=)'
 
 " s:CmdLineClass {{{
 let s:CmdLineClass = {
@@ -258,7 +262,8 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	endif
 	let match = matchstr(cmdline, g:vimlparsers#s_cmd_pat)
 	if !empty(match) && !fun 
-	    let global = (cmdline =~ '^\v\C\s*%(g%[lobal]|v%[global])\s*%($|\W@=)' ? 1 : 0)
+	    let global = (cmdline =~# '^\v\C\s*%(g%[lobal]|v%[global])\s*%($|\W@=)' ? 1 : 0)
+	    let grep_cmd = cmdline =~# g:vimlparsers#grep_cmd_pat
 	    let cmdl.global = global
 	    let cmdl.cmd .= match
 	    let idx += len(match)
@@ -272,6 +277,12 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 		let cmdl.pattern .= char
 		let idx += 1
 		let cmdline = cmdline[1:]
+	    endif
+	    if grep_cmd
+		" parse vimgrep & lvimgrep arguments
+		let match = matchstr(cmdline, '^\v([^|]|\\@1<=\|)*')
+		let cmdl.args .= match
+		let cmdline = cmdline[len(match):]
 	    endif
 	    if global
 		call add(cmdlines, cmdl)
