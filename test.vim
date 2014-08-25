@@ -224,6 +224,9 @@ let cmd='lv /pattern/ *.vim'
 let _res=[{'cmd': 'lv ', 'range': '', 'pattern': '/pattern/', 'global': 0, 'decorator': '', 'args': ' *.vim'}]
 call s:Test(cmd, _res, ':', 1)
 
+let cmd='tabe file\ name.vim +/pattern\ with\ space'
+call s:Test(cmd, 'tabe +/\\vpattern\\ with\\ space file\ name.vim', ':', 0)
+
 if s:failed == 0
     echohl Title
     echom "All tests passed!"
