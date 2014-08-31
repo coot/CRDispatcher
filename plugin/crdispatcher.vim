@@ -12,6 +12,6 @@ cno <C-M> <CR>
 cno <Plug>CRDispatch <C-\>eg:CRDispatcher.dispatch()<CR><CR>
 " Mod out 'debug-mode' to prevent recursive loop when deugging the plugin
 " itself.
-cm <expr> <CR> index(['>', ''], getcmdtype()) != -1 ? '<CR>' :  '<Plug>CRDispatch'
+cm <expr> <CR> index(['>', '=', '@', ''], getcmdtype()) != -1 ? '<CR>' :  '<Plug>CRDispatch'
 " Clever <c-f> fix:
 cno <c-f> <C-\>eCRDispatcher.dispatch(1)<CR><c-f>
