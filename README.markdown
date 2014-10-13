@@ -1,6 +1,6 @@
 # CRDispatcher Vim Plugin
-This is a utility plugin which is used in my other Vim plugins.  It let
-regieter callback functions which transform the command line after hitting
+This is a utility plugin which is used in my other Vim plugins.  It allows
+registering callback functions which transform the command line after hitting
 enter: for example EnchantedVim is using it to add `\v` to patterns.
 
 It also has a nice hack to make `c_CTRL-F` work nicely: it will transform
@@ -14,7 +14,7 @@ The plugins that depend on it are:
 * [EnchantedVim](https://github.com/coot/EnchantedVim)
 
 ## Callbacks
-Every callback function axcepts one argument: the crdispatcher#CRDispatcher
+Every callback function accepts one argument: the crdispatcher#CRDispatcher
 dictionary, and it can modify the cmdline value.  A callback can also be
 a dictionary with a dict function `__transform_cmd__`.   You can copy the
 `crdispatcher#CallbackClass` and use its `__init__` method.  For more
