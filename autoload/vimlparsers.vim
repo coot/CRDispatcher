@@ -133,11 +133,12 @@ let vimlparsers#cmd_decorators_pat = '^\v\C(:|\s)*('.
 	    \ ')*\s*($|\S@=)'
 
 let vimlparsers#s_cmd_pat = '^\v\C\s*('.
-	    \ 'g%[lobal]\s*|'.
-	    \ 'v%[global]\s*|'.
-	    \ 'vim%[grep]\s*|'.
-	    \ 'lv%[imgrep]\s*'.
-	    \ ')($|\W@=)'
+	    \ 'g%[lobal]|'.
+	    \ 'v%[global]|'.
+	    \ 'vim%[grep]|'.
+	    \ 'lv%[imgrep]|'.
+	    \ 'ol%[dfiles]'.
+	    \ ')\s*($|\W@=)'
 let vimlparsers#grep_cmd_pat = '^\v\C\s*('.
 	    \ 'vim%[grep]\s*|'.
 	    \ 'lv%[imgrep]\s*'.
@@ -394,7 +395,11 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	    let cmdline = cmdline[len(match):]
 	endif
 	let c = cmdline[0]
-	if c ==# '"'
+	if c ==# '@'
+	    let cmdl.cmd .= cmdline[0:1]
+	    let idx += 2
+	    let cmdline = cmdline[2:]
+	elseif c ==# '"'
 	    let [char, str] = vimlparsers#ParsePattern(cmdline)
 	    if !empty(cmdl.pattern)
 		let cmdl.args .= char.str.char
