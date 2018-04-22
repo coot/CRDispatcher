@@ -199,6 +199,7 @@ let vimlparsers#bar_cmd_pat = '^\v\C\s*('.
 
 let vimlparsers#edit_cmd_pat = '^\v\C\s*('.
 		\ 'e%[dit]!?|'.
+		\ 'ped%[it]!?|'.
 		\ 'view?|'.
 		\ 'r%[ead]|'.
 		\ 'sp%[lit]!?|'.
