@@ -19,49 +19,36 @@ fun! vimlparsers#ParseRange(cmdline) " {{{
 	    let add = matchstr(cmdline, '\v^\s*\d+'.s:range_modifier)
 	    let range .= add
 	    let cmdline = cmdline[len(add):]
-	    " echom 1
-	    " echom range
 	elseif cmdline =~ '^\s*[-+]'
 	    let add = matchstr(cmdline, '\v^\s*'.s:range_modifier)
 	    let range .= add
 	    let cmdline = cmdline[len(add):]
-	    " echom 2
 	elseif cmdline =~ '^\.\s*'
 	    let add = matchstr(cmdline, '\v^\s*\.'.s:range_modifier)
 	    let range .= add
 	    let cmdline = cmdline[len(add):]
-	    " echom 3
-	    " echom range
 	elseif cmdline =~ '^\s*\\[&/?]'
 	    let add = matchstr(cmdline, '^\v\s*\\[/&?]'.s:range_modifier)
 	    let range .= add
 	    let cmdline = cmdline[len(add):]
-	    " echom 4
-	    " echom range
 	elseif cmdline =~ '^\s*[?/]'
 	    let add = matchstr(cmdline, '^\v\s*[?/]@=')
 	    let range .= add
 	    let cmdline = cmdline[len(add):]
 	    let [char, pattern] = vimlparsers#ParsePattern(cmdline)
-	    " echom cmdline.":".add.":".char.":".pattern
 	    let range .= char . pattern . char
 	    let cmdline = cmdline[len(pattern)+2:]
 	    let add = matchstr(cmdline, '^\v'.s:range_modifier)
 	    let range .= add
 	    let cmdline = cmdline[len(add):]
-	    " echom 5
-	    " echom range . "<F>".cmdline."<"
 	elseif cmdline =~ '^\s*\$'
 	    let add = matchstr(cmdline, '\v^\s*\$'.s:range_modifier)
 	    let range .= add
 	    let cmdline = cmdline[len(add):]
-	    " echom 6
-	    " echom range
 	elseif cmdline =~ '^\v[[:space:];,]+'  " yes you can do :1,^t;;; ,10# and it will work like :1,10#
 	    let add = matchstr(cmdline,  '^\v[[:space:];,]+')
 	    let range .= add
 	    let cmdline = cmdline[len(add):]
-	    " echom 7
 	elseif cmdline =~ '^\v\s*[''`][a-zA-Z<>`'']'
 	    let add = matchstr(cmdline, '^\v\s*[''`][a-zA-Z<>`'']') 
 	    let range .= add
@@ -125,28 +112,31 @@ fun! vimlparsers#ParseString(str)  "{{{
     return a:str[:i]
 endfun  "}}}
 
-let vimlparsers#cmd_decorators_pat = '^\v\C(:|\s)*('.
-		\ 'sil%[ent]!?\s*|'.
-		\ 'debug\s*|'.
-		\ 'noswap%[file]\s*|'.
-		\ '\d*verb%[ose]\s*'.
-	    \ ')*\s*($|\S@=)'
+" TODO: more restrictive filter patter, but also allow pattern without matchinf
+" non ident
+let vimlparsers#cmd_decorators_pat = '^\v\C%(:|\s)*%('.
+		\ '(sil%[ent]!?)\s*|'.
+		\ '(debug)\s*|'.
+		\ '(noswap%[file])\s*|'.
+		\ '(\d*verb%[ose])\s*|'.
+		\ '(filt%[er]\s*([^[:ident:]]).{-}\6)\s*'.
+	    \ ')*\s*%($|\S@=)'
 
-let vimlparsers#s_cmd_pat = '^\v\C\s*('.
+let vimlparsers#s_cmd_pat = '^\v\C\s*%('.
 	    \ 'g%[lobal]|'.
 	    \ 'v%[global]|'.
 	    \ 'vim%[grep]|'.
 	    \ 'lv%[imgrep]|'.
 	    \ 'ol%[dfiles]'.
 	    \ ')\s*($|\W@=)'
-let vimlparsers#grep_cmd_pat = '^\v\C\s*('.
+let vimlparsers#grep_cmd_pat = '^\v\C\s*%('.
 	    \ 'vim%[grep]\s*|'.
 	    \ 'lv%[imgrep]\s*'.
 	    \ ')($|\W@=)'
 
 " s:CmdLineClass {{{
 let s:CmdLineClass = {
-	    \ 'decorator': '',
+	    \ 'decorators': [],
 	    \ 'global': 0,
 	    \ 'range': '',
 	    \ 'cmd': '',
@@ -154,15 +144,15 @@ let s:CmdLineClass = {
 	    \ 'args': '',
 	    \ }
 fun! s:CmdLineClass.Repr() dict
-    return '<CmdLine: ' .self['decorator'].':'.self['range'].':'.self['cmd'].':'.self['pattern'].':'.self['args'].'>'
+    return '<CmdLine: ' .self['decorators'].':'.self['range'].':'.self['cmd'].':'.self['pattern'].':'.self['args'].'>'
 endfun
 fun! s:CmdLineClass.Join() dict
-    return self['decorator'].self['range'].self['cmd'].self['pattern'].self['args']
+    return join(get(self, 'decorators', [])). (empty(get(self, 'decorators', [])) ? "" : " ") .self['range'].self['cmd'].self['pattern'].self['args']
 endfun  "}}}
 " TODO :help function /{pattern}
 " see :help :\bar (the list below does not include global and vglobal
 " commands)
-let vimlparsers#bar_cmd_pat = '^\v\C\s*('.
+let vimlparsers#bar_cmd_pat = '^\v\C\s*%('.
 	    \ 'argdo!?|'.
 	    \ 'au%[tocmd]|'.
 	    \ 'bufdo!?|'.
@@ -197,7 +187,7 @@ let vimlparsers#bar_cmd_pat = '^\v\C\s*('.
 	    \ '%(r%[ead]\s*)?\!.*'.
 	\ ')\s*%(\W|$)@='
 
-let vimlparsers#edit_cmd_pat = '^\v\C\s*('.
+let vimlparsers#edit_cmd_pat = '^\v\C\s*%('.
 		\ 'e%[dit]!?|'.
 		\ 'ped%[it]!?|'.
 		\ 'view?|'.
@@ -222,7 +212,7 @@ let vimlparsers#edit_cmd_pat = '^\v\C\s*('.
 " :args command is not supported :args [++opt] [+cmd] {arglist}
 " :write, :update commands are not supported: :w [++opt] >> {file}
 
-let vimlparsers#fname_cmds_pat = '^\v\C\s*('.
+let vimlparsers#fname_cmds_pat = '^\v\C\s*%('.
 		\ '%('.
 		    \ 's?b%[uffer]!?|'.
 		    \ 'bdelete!?|'.
@@ -250,15 +240,15 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
     while !empty(cmdline)
 	" echo 'cmdline: <'.cmdline.'>'
 	if check_range == 1
-	    let decorator = matchstr(cmdline, g:vimlparsers#cmd_decorators_pat)
-	    let cmdline = cmdline[len(decorator):]
-	    let cmdl.decorator = decorator
+	    let m = matchlist(cmdline, g:vimlparsers#cmd_decorators_pat)
+	    let decorators = filter(m[1:], {idx, val -> len(val) > 1})
+	    let cmdline = cmdline[len(m[0]):]
+	    let cmdl.decorators = decorators
 	    let [range, cmdline, error] = vimlparsers#ParseRange(cmdline)
 	    let check_range = 0
 	    let cmdl.range = range
 	    let idx += len(range) + 1
 	    let after_range = 1
-	    " echo cmdl.Repr()
 	    con
 	else
 	    let after_range = 0
@@ -299,7 +289,6 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	endif
 	let match = matchstr(cmdline, '^\v\C\s*s%[ubstitute]\s*($|\W@=)') 
 	if !empty(match) && !fun
-	    " echom "cmdline (sub): ".cmdline
 	    let new_cmd = 0
 	    let cmdl.cmd .= match
 	    let d = len(match)
@@ -315,7 +304,6 @@ fun! vimlparsers#ParseCommandLine(cmdline, cmdtype)  "{{{
 	    let cmdl.args .= pat
 	    let d = len(char.pat)
 	    let idx += d
-	    " echom "cmdline (sub): ".cmdline
 	    let cmdline = cmdline[(d):]
 	    if cmdline[0] == char
 		let idx += 1
