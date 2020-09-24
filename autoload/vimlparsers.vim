@@ -207,7 +207,8 @@ let vimlparsers#edit_cmd_pat = '^\v\C\s*%('.
 		\ 'sav%[eas]!?|'.
 		\ 'wq!?|'.
 		\ 'exi%[t]!?|'.
-		\ 'tabe%[dit]'.
+		\ 'tabe%[dit]|'.
+                \ 'b%[uffer]'.
 	    \ ')%($|\W@=)'
 " :args command is not supported :args [++opt] [+cmd] {arglist}
 " :write, :update commands are not supported: :w [++opt] >> {file}
